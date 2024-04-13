@@ -57,11 +57,59 @@ export async function sendOtp(eamil: string) {
 
   const OTP = generateOTP();
 
+  const htmlContent = `<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Email</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+      }
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #333;
+      }
+      .otp {
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        color: #007bff;
+        margin-bottom: 20px;
+      }
+      p {
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>OTP Verification</h1>
+      <p>Your OTP for verification is:</p>
+      <div class="otp">${OTP}</div>
+      <p>Please use this OTP to verify your account.</p>
+    </div>
+  </body>
+  </html>
+`;
+
   const info = await transporter.sendMail({
     from: "onboarding@resend.dev",
     to: eamil,
     subject: "Hello World",
-    html: `<strong>${OTP}</strong>`,
+    html: htmlContent,
   });
 
   console.log("Message sent: %s", info.messageId);
