@@ -1,5 +1,5 @@
 "use client";
-import React, { ChangeEvent, useReducer, useState } from "react";
+import React, { ChangeEvent, FormEvent, useReducer, useState } from "react";
 import Button from "~/app/_components/ui/button";
 import Card from "~/app/_components/ui/card";
 import { api } from "~/trpc/react";
@@ -25,7 +25,7 @@ const VerficationPage = () => {
   const { mutate } = api.auth.verifyOtp.useMutation();
   const [otp, setOtp] = useState("");
   const otpInput = [1, 2, 3, 4, 5, 6, 7, 8];
-  const handleSubmit = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log(otp);
     mutate({ otp, email: "akgec.saurabh@gmail.com" });
