@@ -1,33 +1,25 @@
 "use client";
-import React, { useReducer } from "react";
+import React, { useReducer, useState } from "react";
 import Card from "./ui/card";
 import Button from "./ui/button";
 import Link from "next/link";
 
 interface State {
-  name: string;
   email: string;
   password: string;
 }
 
 type Action =
-  | { type: "SET_NAME"; payload: string }
   | { type: "SET_EMAIL"; payload: string }
   | { type: "SET_PASSWORD"; payload: string };
 
 const initialState: State = {
-  name: "",
   email: "",
   password: "",
 };
 
-const createAccountReducer = (state: State, action: Action): State => {
+const LoginReducer = (state: State, action: Action): State => {
   switch (action.type) {
-    case "SET_NAME":
-      return {
-        ...state,
-        name: action.payload,
-      };
     case "SET_EMAIL":
       return {
         ...state,
@@ -43,8 +35,9 @@ const createAccountReducer = (state: State, action: Action): State => {
   }
 };
 
-const CreateAccount: React.FC = () => {
-  const [state, dispatch] = useReducer(createAccountReducer, initialState);
+const Login: React.FC = () => {
+  const [state, dispatch] = useReducer(LoginReducer, initialState);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     dispatch({
@@ -59,22 +52,12 @@ const CreateAccount: React.FC = () => {
   };
 
   return (
-    <Card
-      heading="Create your account"
-      className="flex flex-col space-y-6 pb-24"
-    >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="SET_NAME">Name</label>
-          <input
-            className="block  w-full  rounded px-4 py-2 ring-1 ring-border"
-            type="text"
-            name="SET_NAME"
-            value={state.name}
-            placeholder="Your Name"
-            onChange={handleChange}
-          />
-        </div>
+    <Card heading="Login" className="flex flex-col space-y-6 pb-24">
+      <div className="my-2 space-y-1 text-center">
+        <h2 className="text-[24px] font-medium">Welcome back to ECOMMERCE</h2>
+        <p>The next gen business marketplace</p>
+      </div>
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
         <div>
           <label htmlFor="SET_EMAIL">Email</label>
           <input
@@ -88,31 +71,41 @@ const CreateAccount: React.FC = () => {
         </div>
         <div>
           <label htmlFor="SET_PASSWORD">PASSWORD</label>
-          <input
-            className="block  w-full  rounded px-4 py-2 ring-1 ring-border"
-            type="password"
-            name="SET_PASSWORD"
-            placeholder="Your Password"
-            value={state.password}
-            onChange={handleChange}
-          />
+          <div className="relative">
+            <input
+              className="block  w-full  rounded px-4 py-2 ring-1 ring-border"
+              type={showPassword ? "text" : "password"}
+              name="SET_PASSWORD"
+              placeholder="Your Password"
+              value={state.password}
+              onChange={handleChange}
+            />
+            <Button
+              className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-sm font-medium hover:underline hover:underline-offset-2"
+              onClick={() => {
+                setShowPassword((prv) => !prv);
+              }}
+            >
+              SHOW
+            </Button>
+          </div>
         </div>
         <Button type="submit" variant="lg">
           Create Account
         </Button>
       </form>
-
+      <div className="w-full border-t border-slate-200"></div>
       <div className="flex justify-center gap-2">
-        <span>Have an Account?</span>
+        <span>Don’t have an Account? </span>
         <Link
           href="/login"
           className="hover:underline hover:underline-offset-2"
         >
-          <span className="font-medium">LOGIN</span>
+          <span className="font-medium">SIGN UP</span>
         </Link>
       </div>
     </Card>
   );
 };
 
-export default CreateAccount;
+export default Login;
