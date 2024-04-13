@@ -47,12 +47,15 @@ const Login: React.FC = () => {
     });
   };
 
-  const { mutate: login } = api.auth.login.useMutation();
+  const { mutate: login } = api.auth.login.useMutation({
+    onSuccess: () => {
+      console.log("Your are logged in");
+    },
+  });
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    const data = login(state);
-    console.log(data);
+    login(state);
   };
 
   return (

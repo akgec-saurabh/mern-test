@@ -87,11 +87,7 @@ export const authRouter = createTRPCRouter({
 
       let isPasswordValid;
       if (user) {
-        console.log(user);
-        console.log("------", isPasswordValid, input.password, user.password);
-
         isPasswordValid = bcrypt.compareSync(input.password, user.password);
-        console.log(isPasswordValid);
       }
       if (isPasswordValid) {
         const payload = { email: input.email };
