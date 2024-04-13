@@ -3,6 +3,8 @@ import React, { useReducer } from "react";
 import Card from "./ui/card";
 import Button from "./ui/button";
 import Link from "next/link";
+import { api } from "~/trpc/react";
+import { useRouter } from "next/navigation";
 
 interface State {
   name: string;
@@ -45,6 +47,7 @@ const createAccountReducer = (state: State, action: Action): State => {
 
 const CreateAccount: React.FC = () => {
   const [state, dispatch] = useReducer(createAccountReducer, initialState);
+  const router = useRouter();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     dispatch({
@@ -53,9 +56,17 @@ const CreateAccount: React.FC = () => {
     });
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+  const { mutate } = api.auth.sendOTP.useMutation({
+    onSuccess: (data) => {
+      console.log(data);
+    },
+  });
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log("Form submitted with state:", state);
+    const sendOtp = mutate(state);
+    router.push(`/verification?${state.email}`);
   };
 
   return (

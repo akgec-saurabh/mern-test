@@ -3,6 +3,7 @@ import React, { useReducer, useState } from "react";
 import Card from "./ui/card";
 import Button from "./ui/button";
 import Link from "next/link";
+import { api } from "~/trpc/react";
 
 interface State {
   email: string;
@@ -46,9 +47,12 @@ const Login: React.FC = () => {
     });
   };
 
+  const { mutate: login } = api.auth.login.useMutation();
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    console.log("Form submitted with state:", state);
+    const data = login(state);
+    console.log(data);
   };
 
   return (
@@ -91,7 +95,7 @@ const Login: React.FC = () => {
           </div>
         </div>
         <Button type="submit" variant="lg">
-          Create Account
+          Login
         </Button>
       </form>
       <div className="w-full border-t border-slate-200"></div>
