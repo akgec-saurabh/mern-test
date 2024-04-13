@@ -7,7 +7,7 @@ export default {
     fontSize: {
       xs: "0.75rem",
       sm: "0.875rem",
-      base: "2rem",
+      xl: "2rem",
     },
     container: {
       center: true,
@@ -34,6 +34,7 @@ export default {
       },
       colors: {
         gray: "#F4F4F4",
+        border: "#C1C1C1",
       },
     },
   },
