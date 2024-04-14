@@ -106,9 +106,9 @@ export async function sendOtp(eamil: string) {
 `;
 
   const info = await transporter.sendMail({
-    from: "onboarding@resend.dev",
+    from: "otp@shayaripage.com",
     to: eamil,
-    subject: "Hello World",
+    subject: "OTP VERIFICATION",
     html: htmlContent,
   });
 
