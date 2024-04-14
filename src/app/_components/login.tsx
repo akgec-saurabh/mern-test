@@ -4,6 +4,8 @@ import Card from "./ui/card";
 import Button from "./ui/button";
 import Link from "next/link";
 import { api } from "~/trpc/react";
+import { loginAction } from "actions/auth";
+import { useRouter } from "next/navigation";
 
 interface State {
   email: string;
@@ -38,6 +40,7 @@ const LoginReducer = (state: State, action: Action): State => {
 
 const Login: React.FC = () => {
   const [state, dispatch] = useReducer(LoginReducer, initialState);
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -48,8 +51,12 @@ const Login: React.FC = () => {
   };
 
   const { mutate: login } = api.auth.login.useMutation({
-    onSuccess: () => {
-      console.log("Your are logged in");
+    onSuccess: async ({ data }) => {
+      if (data.token) {
+        await loginAction(data.token);
+      }
+
+      router.push("/interest");
     },
   });
 
@@ -88,12 +95,12 @@ const Login: React.FC = () => {
               onChange={handleChange}
             />
             <Button
-              className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-sm font-medium hover:underline hover:underline-offset-2"
+              className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-xs font-medium hover:underline hover:underline-offset-2 "
               onClick={() => {
                 setShowPassword((prv) => !prv);
               }}
             >
-              SHOW
+              {showPassword ? "HIDE" : "SHOW"}
             </Button>
           </div>
         </div>
@@ -105,7 +112,7 @@ const Login: React.FC = () => {
       <div className="flex justify-center gap-2">
         <span>Don’t have an Account? </span>
         <Link
-          href="/login"
+          href="/sign-up"
           className="hover:underline hover:underline-offset-2"
         >
           <span className="font-medium">SIGN UP</span>

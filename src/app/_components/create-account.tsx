@@ -10,17 +10,20 @@ interface State {
   name: string;
   email: string;
   password: string;
+  error: string;
 }
 
 type Action =
   | { type: "SET_NAME"; payload: string }
   | { type: "SET_EMAIL"; payload: string }
-  | { type: "SET_PASSWORD"; payload: string };
+  | { type: "SET_PASSWORD"; payload: string }
+  | { type: "SET_ERROR"; payload: string };
 
 const initialState: State = {
   name: "",
   email: "",
   password: "",
+  error: "",
 };
 
 const createAccountReducer = (state: State, action: Action): State => {
@@ -40,6 +43,11 @@ const createAccountReducer = (state: State, action: Action): State => {
         ...state,
         password: action.payload,
       };
+    case "SET_ERROR":
+      return {
+        ...state,
+        error: action.payload,
+      };
     default:
       return state;
   }
@@ -57,16 +65,18 @@ const CreateAccount: React.FC = () => {
   };
 
   const { mutate } = api.auth.sendOTP.useMutation({
-    onSuccess: (data) => {
+    onSuccess(data, variables, context) {
       console.log(data);
+      router.push(`/verification?token=${data?.token}`);
+    },
+    onError(error) {
+      dispatch({ type: "SET_ERROR", payload: "Some Error Occured" });
     },
   });
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("Form submitted with state:", state);
-    const sendOtp = mutate(state);
-    router.push(`/verification?${state.email}`);
+    mutate(state);
   };
 
   return (
@@ -74,7 +84,7 @@ const CreateAccount: React.FC = () => {
       heading="Create your account"
       className="flex flex-col space-y-6 pb-24"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
         <div>
           <label htmlFor="SET_NAME">Name</label>
           <input
@@ -108,6 +118,9 @@ const CreateAccount: React.FC = () => {
             onChange={handleChange}
           />
         </div>
+        {state.error && (
+          <div className="my-4 text-sm text-red-500">{state.error}</div>
+        )}
         <Button type="submit" variant="lg">
           Create Account
         </Button>

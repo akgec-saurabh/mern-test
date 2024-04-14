@@ -1,4 +1,5 @@
 "use client";
+import { useSearchParams } from "next/navigation";
 import React, { ChangeEvent, FormEvent, useReducer, useState } from "react";
 import Button from "~/app/_components/ui/button";
 import Card from "~/app/_components/ui/card";
@@ -21,14 +22,16 @@ const VerficationPage = () => {
   // const [state, dispatch] = useReducer(otpReducer, {
   //   otp: [],
   // });
+  const searchParams = useSearchParams();
 
   const { mutate } = api.auth.verifyOtp.useMutation();
   const [otp, setOtp] = useState("");
-  const otpInput = [1, 2, 3, 4, 5, 6, 7, 8];
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(otp);
-    mutate({ otp, email: "akgec.saurabh@gmail.com" });
+    const token = searchParams.get("token");
+    if (token) {
+      mutate({ otp, token });
+    }
   };
   return (
     <div className="mt-8 flex justify-center">

@@ -5,6 +5,10 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+interface DecodedToken {
+  email: string;
+}
+
 export const authRouter = createTRPCRouter({
   sendOTP: publicProcedure
     .input(
@@ -15,7 +19,6 @@ export const authRouter = createTRPCRouter({
       const hashOtp = bcrypt.hashSync(otp, 10);
       const expiryTime = new Date(Date.now() + 5 * 60 * 1000);
       let hashPassword;
-      console.log("inputpass", input.password);
       try {
         hashPassword = bcrypt.hashSync(input.password, 10);
       } catch (error) {
@@ -23,7 +26,7 @@ export const authRouter = createTRPCRouter({
       }
       if (hashPassword) {
         try {
-          return ctx.db.user.create({
+          await ctx.db.user.create({
             data: {
               name: input.name,
               email: input.email,
@@ -37,16 +40,31 @@ export const authRouter = createTRPCRouter({
               name: true,
             },
           });
+
+          const payload = { email: input.email };
+          const secretkey = process.env.SECRET_KEY;
+          const token = jwt.sign(payload, secretkey!, { expiresIn: "1hr" });
+
+          return { token };
         } catch (error) {
           console.log(error);
+          throw Error("Some Error occured on Server");
         }
       }
     }),
   verifyOtp: publicProcedure
-    .input(z.object({ otp: z.string().length(8), email: z.string().email() }))
+    .input(z.object({ otp: z.string().length(8), token: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      const secretkey = process.env.SECRET_KEY!;
+      const tokenValid = jwt.verify(input.token, secretkey) as DecodedToken;
+
+      if (!tokenValid) {
+        return { message: "Error in token" };
+      }
+      const email = tokenValid?.email;
+
       const hashOtp = await ctx.db.user.findFirst({
-        where: { email: input.email },
+        where: { email },
         select: {
           otp: true,
           otpExpiry: true,
@@ -54,23 +72,23 @@ export const authRouter = createTRPCRouter({
       });
       let otpIsValid;
       if (hashOtp) {
-        console.log(input.otp, hashOtp.otp);
         otpIsValid = bcrypt.compareSync(input.otp, hashOtp.otp);
       }
 
       let token;
       if (otpIsValid) {
-        const payload = { email: input.email };
+        const payload = { email };
         const secretkey = process.env.SECRET_KEY;
         token = jwt.sign(payload, secretkey!, { expiresIn: "1hr" });
 
         await ctx.db.user.update({
-          where: { email: input.email },
+          where: { email },
           data: { verified: true },
         });
+        return token;
       }
 
-      return token;
+      return { error: "Error Occured" };
     }),
 
   login: publicProcedure
@@ -93,9 +111,19 @@ export const authRouter = createTRPCRouter({
         const payload = { email: input.email };
         const secretkey = process.env.SECRET_KEY;
         const token = jwt.sign(payload, secretkey!, { expiresIn: "1hr" });
+
         return { message: "You are logged in", data: { token } };
       } else {
         return { message: "Password is not Valid", data: {} };
+      }
+    }),
+  verifyToken: publicProcedure
+    .input(z.object({ token: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const secretkey = process.env.SECRET_KEY!;
+      const tokenValid = jwt.verify(input.token, secretkey);
+      if (tokenValid) {
+        return true;
       }
     }),
 });

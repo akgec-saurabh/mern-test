@@ -13,7 +13,7 @@ const Card: React.FC<CardProps> = ({
   return (
     <div
       className={cn(
-        "ring-border w-full max-w-xl rounded-md  px-[60px] ring-1",
+        "w-full max-w-xl rounded-md px-[60px]  ring-1 ring-border",
         className,
       )}
       {...props}

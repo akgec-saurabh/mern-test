@@ -12,13 +12,20 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
   name      String
   password  String
   otp       String
   otpExpiry DateTime
-  verified  Boolean  @default(false)
+  verified  Boolean    @default(false)
+  interest  Interest[]
 
   @@index([name])
+}
+
+model Interest {
+  id   Int    @id @default(autoincrement())
+  name String
+  user User[]
 }

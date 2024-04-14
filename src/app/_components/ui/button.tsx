@@ -13,7 +13,7 @@ const Button: React.FC<ButtonProps> = ({
   const ButtonVariant = {
     base: "",
     default: "px-4 py-2",
-    icon: "h-8 w-8 flex justify-center items-center",
+    icon: "h-8 w-8 flex justify-center items-center hover:bg-stone-100",
     lg: "h-[56px] px-4 py-2 rounded-md uppercase bg-black text-white font-medium",
   };
   return (
