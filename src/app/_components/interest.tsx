@@ -100,36 +100,31 @@ const Interest = ({ token }: { token: string }) => {
           </div>
         )}
       </div>
-      <Suspense>
-        <div className="h-48">
-          {interestQuery.data?.data.map((interest) => {
-            const exist = data?.interest.some((i) => i.id === interest.id);
-            return (
-              <div
-                key={interest.name}
-                className="my-1 flex  items-center gap-2"
-              >
-                <input
-                  className="h-4 w-4 cursor-pointer  accent-black"
-                  id={interest.id.toString()}
-                  type="checkbox"
-                  defaultChecked={!!exist}
-                  value={interest.id}
-                  onChange={(event) => handleChange(event)}
-                />
-                <label className="capitalize" htmlFor={interest.id.toString()}>
-                  {interest.name}
-                </label>
-              </div>
-            );
-          })}
-          {interestQuery.isLoading && (
-            <div className=" animate-pulse text-center text-[20px]">
-              Loading Interests ...
+      <div className="h-48">
+        {interestQuery.data?.data.map((interest) => {
+          const exist = data?.interest.some((i) => i.id === interest.id);
+          return (
+            <div key={interest.name} className="my-1 flex  items-center gap-2">
+              <input
+                className="h-4 w-4 cursor-pointer  accent-black"
+                id={interest.id.toString()}
+                type="checkbox"
+                defaultChecked={!!exist}
+                value={interest.id}
+                onChange={(event) => handleChange(event)}
+              />
+              <label className="capitalize" htmlFor={interest.id.toString()}>
+                {interest.name}
+              </label>
             </div>
-          )}
-        </div>
-      </Suspense>
+          );
+        })}
+        {interestQuery.isLoading && (
+          <div className=" animate-pulse text-center text-[20px]">
+            Loading Interests ...
+          </div>
+        )}
+      </div>
 
       <div className="my-4 flex items-center justify-center">
         <Button
