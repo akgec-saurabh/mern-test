@@ -17,10 +17,10 @@ const Interest = ({ token }: { token: string }) => {
   );
   const interestQuery = api.interest.getInterest.useQuery({ page: activePage });
 
-  const TOTAL_PAGES_TO_RENDER = React.useMemo(
-    () => Math.ceil(interestQuery?.data?.total ?? 1 / 6),
-    [interestQuery.data],
+  const TOTAL_PAGES_TO_RENDER = Math.ceil(
+    (interestQuery?.data?.total ?? 1) / 6,
   );
+
   useEffect(() => {
     router.push(
       pathname + "?" + createQueryString("page", activePage.toString()),
